@@ -1,0 +1,9 @@
+{
+  "description": "don't work by some reason",
+  "modules": true,
+  "plugins": {
+    "autoprefixer": {
+      "grid": true
+    }
+  }
+}

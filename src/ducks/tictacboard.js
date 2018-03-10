@@ -78,7 +78,7 @@ function _calculateWinner(aBoardPoss = []) {
       return aBoardPoss[a];
     }
   }
-  return '';
+  return (aBoardPoss.indexOf('') === -1) ? 'Draw' : '';
 }
 
 const initialState = {

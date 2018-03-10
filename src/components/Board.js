@@ -1,4 +1,4 @@
-import 'babel-polyfill';
+import PropTypes from 'prop-types';
 
 import React from 'react';
 import './Board.sass';
@@ -42,6 +42,13 @@ class Board extends React.Component {
       </div>
     );
   }
+}
+
+Board.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  boardPositions: PropTypes.arrayOf(
+    PropTypes.string.isRequired
+  ).isRequired,
 }
 
 export default Board

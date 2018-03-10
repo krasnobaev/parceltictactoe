@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { store } from '../store.js';
@@ -44,6 +45,23 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+Game.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  onBoardClick: PropTypes.func.isRequired,
+  moveTo: PropTypes.func.isRequired,
+
+  history: PropTypes.arrayOf(
+    PropTypes.shape({
+      boardPositions: PropTypes.arrayOf(
+        PropTypes.string.isRequired
+      ).isRequired,
+    }).isRequired
+  ).isRequired,
+  stepNumber: PropTypes.number.isRequired,
+  winner: PropTypes.string.isRequired,
+  xIsNext: PropTypes.bool.isRequired
 }
 
 export default Game

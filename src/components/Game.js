@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { store } from '../store.js';
-import { chooseCell } from '../actions/';
+import { chooseCell } from '../ducks/tictacboard';
 
 import Board from './Board';
 import './Game.sass';

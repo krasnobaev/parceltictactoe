@@ -1,8 +1,31 @@
 import { combineReducers } from 'redux'
-import {
-  CHOOSE_CELL,
-  MOVE_TO
-} from '../actions/'
+
+/* actions */
+
+export const CHOOSE_CELL = 'CHOOSE_CELL'
+export const MOVE_TO = 'MOVE_TO'
+export const MOVE_NEXT = 'MOVE_NEXT'
+export const MOVE_BACK = 'MOVE_BACK'
+
+/* action creators */
+
+export const chooseCell = iCell => {
+  return { type: 'CHOOSE_CELL', iCell };
+}
+
+export const moveTo = iStep => {
+  return { type: 'MOVE_TO', iStep };
+}
+
+export const moveNext = iStep => {
+  return { type: 'MOVE_NEXT', iStep };
+}
+
+export const moveBack = iStep => {
+  return { type: 'MOVE_BACK', iStep };
+}
+
+/* reducers */
 
 function calculateWinner(aBoardPoss = []) {
   const lines = [
@@ -75,3 +98,4 @@ const rootReducer = combineReducers({
 })
 
 export default rootReducer
+

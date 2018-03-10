@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { calculateWinner, chooseCell, moveTo } from '../actions/';
+import { calculateWinner, chooseCell, moveTo } from '../ducks/tictacboard';
 import Game from '../components/Game.js';
 
 const mapStateToProps = (state, own) => {

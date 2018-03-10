@@ -1,6 +1,6 @@
 import { applyMiddleware, createStore } from 'redux';
 import logger from 'redux-logger';
-import rootReducer from './reducers';
+import rootReducer from './tictacboard';
 
 const state = {
   boardState: {
@@ -21,4 +21,4 @@ export const store = ((initialState = state) => {
       logger
     )
   );
-})()
+})();

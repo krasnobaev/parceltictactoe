@@ -1,6 +1,7 @@
 import { applyMiddleware, createStore } from 'redux';
+import { createEpicMiddleware } from 'redux-observable';
 import logger from 'redux-logger';
-import rootReducer from './tictacboard';
+import { rootEpic, rootReducer } from './tictacboard';
 
 const state = {
   boardState: {
@@ -13,11 +14,13 @@ const state = {
   }
 };
 
+const epicMiddleware = createEpicMiddleware(rootEpic);
 export const store = ((initialState = state) => {
   return createStore(
     rootReducer,
     initialState,
     applyMiddleware(
+      epicMiddleware,
       logger
     )
   );

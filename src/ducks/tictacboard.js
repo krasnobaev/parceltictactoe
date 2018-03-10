@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux'
+import { combineEpics } from 'redux-observable'
 
 /* actions */
 
 export const CHOOSE_CELL = 'CHOOSE_CELL'
-export const MOVE_TO = 'MOVE_TO'
-export const MOVE_NEXT = 'MOVE_NEXT'
-export const MOVE_BACK = 'MOVE_BACK'
+export const CHOOSE_STEP = 'CHOOSE_STEP'
+const MAKE_A_STEP = 'MAKE_A_STEP'
+const PREPARE_NEXT_STEP = 'PREPARE_NEXT_STEP'
+const WARP_TO_STEP = 'WARP_TO_STEP'
 
 /* action creators */
 
@@ -13,21 +15,53 @@ export const chooseCell = iCell => {
   return { type: 'CHOOSE_CELL', iCell };
 }
 
-export const moveTo = iStep => {
-  return { type: 'MOVE_TO', iStep };
+export const chooseStep = iStep => {
+  return { type: 'CHOOSE_STEP', iStep };
 }
 
-export const moveNext = iStep => {
-  return { type: 'MOVE_NEXT', iStep };
+const makeAStep = iCell => {
+  return { type: 'MAKE_A_STEP', iCell };
 }
 
-export const moveBack = iStep => {
-  return { type: 'MOVE_BACK', iStep };
+const prepareNextStep = () => {
+  return { type: 'PREPARE_NEXT_STEP' };
 }
+
+const warpToStep = iStep => {
+  return { type: 'WARP_TO_STEP', iStep };
+}
+
+/* epics */
+
+const boardCellsManipulationEpic = (action$, store) => action$
+  .ofType(CHOOSE_CELL)
+  .filter(action => {
+    let state = store.getState().boardState;
+    let currentState = state.history.slice(state.stepNumber, state.stepNumber+1)[0].boardPositions.slice();
+    return !currentState[action.iCell] &&                        // cell is empty
+      ['X','O'].indexOf(_calculateWinner(currentState)) === -1;  // winner for new state is not known
+  })
+  .mergeMap(action => [
+    makeAStep(action.iCell),
+    prepareNextStep()
+  ]);
+
+const historyEpic = (action$, store) => action$
+  .ofType(CHOOSE_STEP)
+  .filter(action => action.iStep >= 0 && action.iStep < store.getState().boardState.history.length)
+  .mergeMap(action => [
+    warpToStep(action.iStep),
+    prepareNextStep()
+  ]);
+
+export const rootEpic = combineEpics(
+  boardCellsManipulationEpic,
+  historyEpic
+);
 
 /* reducers */
 
-function calculateWinner(aBoardPoss = []) {
+function _calculateWinner(aBoardPoss = []) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -57,45 +91,32 @@ const initialState = {
 }
 
 const boardState = (state = initialState, { type, iCell, iStep, aSquares } = action) => {
-  let _aBoardPoss;
+  let currentState = state.history.slice(state.stepNumber, state.stepNumber+1)[0].boardPositions.slice();
 
   switch (type) {
-    case CHOOSE_CELL:
-      _aBoardPoss = state.history.slice(state.stepNumber, state.stepNumber+1)[0].boardPositions.slice();
-      if (
-        calculateWinner(_aBoardPoss) ||
-        (!state.warping && _aBoardPoss[iCell])
-      ) {
-        return state;
-      }
-      _aBoardPoss[iCell] = ((state.stepNumber%2) === 0) ? 'X' : 'O';
+    case MAKE_A_STEP:
+      currentState[iCell] = ((state.stepNumber%2) === 0) ? 'X' : 'O';
 
       return {
         history: state.history.slice(0, state.stepNumber+1).concat([{
-          boardPositions: _aBoardPoss
+          boardPositions: currentState
         }]),
         stepNumber: state.stepNumber+1,
-        xIsNext: (state.stepNumber%2) === 0,
-        winner: calculateWinner(_aBoardPoss),
-        warping: false
       };
-    case MOVE_TO:
-      _aBoardPoss = state.history.slice(iStep, iStep+1)[0].boardPositions.slice();
-
+    case WARP_TO_STEP:
       return Object.assign({}, state, {
         stepNumber: iStep,
-        xIsNext: (iStep % 2) === 0,
-        winner: calculateWinner(_aBoardPoss),
-        warping: true,
+      });
+    case PREPARE_NEXT_STEP:
+      return Object.assign({}, state, {
+        winner: _calculateWinner(currentState),
+        xIsNext: (state.stepNumber % 2) === 0,
       });
     default:
       return state;
   }
 }
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   boardState
 })
-
-export default rootReducer
-

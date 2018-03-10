@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { calculateWinner, chooseCell, moveTo } from '../ducks/tictacboard';
+import { chooseCell, chooseStep } from '../ducks/tictacboard';
 import Game from '../components/Game.js';
 
 const mapStateToProps = (state, own) => {
@@ -25,8 +25,8 @@ const mapDispatchToProps = (dispatch, own) => {
     onBoardClick: iCell => {
       dispatch(chooseCell(iCell))
     },
-    moveTo: iStep => {
-      dispatch(moveTo(iStep))
+    onHistoryClick: iStep => {
+      dispatch(chooseStep(iStep))
     },
 
     stepNumber: 0,

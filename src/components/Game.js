@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { chooseCell } from '../ducks/tictacboard';
-
 import Board from './Board';
 import './Game.sass';
 
@@ -19,7 +17,7 @@ class Game extends React.Component {
     const moves = this.props.state.history.map((step, move) => {
       return (
         <li key={move}>
-          <button onClick={this.props.moveTo.bind(this, move)}>
+          <button onClick={this.props.onHistoryClick.bind(this, move)}>
             {move ? `Go to move #${move}` : 'Go to game start'}
           </button>
         </li>
@@ -49,7 +47,7 @@ class Game extends React.Component {
 Game.propTypes = {
   dispatch: PropTypes.func.isRequired,
   onBoardClick: PropTypes.func.isRequired,
-  moveTo: PropTypes.func.isRequired,
+  onHistoryClick: PropTypes.func.isRequired,
 
   history: PropTypes.arrayOf(
     PropTypes.shape({
